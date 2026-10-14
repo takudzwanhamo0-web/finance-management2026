@@ -1,0 +1,193 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Holy Savior Student Store — Financial Management System</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f6f4ef;--cd:#fff;--ink:#1d2433;--mu:#6b7385;--pr:#1f3a6e;--ln:#e3dfd5;--g:#2e8b57;--y:#d9a21b;--r:#c8453b}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#141820;--cd:#1d2330;--ink:#eef0f5;--mu:#9aa3b5;--pr:#8fb0f0;--ln:#2f374a}}
+:root[data-theme=dark]{--bg:#141820;--cd:#1d2330;--ink:#eef0f5;--mu:#9aa3b5;--pr:#8fb0f0;--ln:#2f374a}
+html,body{height:100%;margin:0}body{background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,sans-serif}
+*{box-sizing:border-box}header{background:var(--pr);color:#fff;padding:10px 16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+header h1{font-size:17px;margin:0;flex:1}header select,header input{padding:6px;border-radius:6px;border:0}
+nav{display:flex;overflow-x:auto;background:var(--cd);border-bottom:1px solid var(--ln)}nav a{padding:11px 14px;white-space:nowrap;cursor:pointer;color:var(--mu)}nav a.on{color:var(--pr);border-bottom:3px solid var(--pr);font-weight:600}
+main{padding:16px;max-width:1100px;margin:auto}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.card{background:var(--cd);border:1px solid var(--ln);border-radius:12px;padding:14px;margin-bottom:12px}.grid .card{margin:0}
+.k{font-size:12px;color:var(--mu);letter-spacing:.05em;text-transform:uppercase}.big{font-size:28px;font-weight:700}
+.g{color:var(--g)}.y{color:var(--y)}.rd{color:var(--r)}table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:7px 6px;border-bottom:1px solid var(--ln)}td.n,th.n{text-align:right}
+.wrap{overflow-x:auto}input,select,textarea{padding:8px;border:1px solid var(--ln);border-radius:8px;background:var(--cd);color:var(--ink);font:inherit;width:100%}
+.f{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}label{font-size:12px;color:var(--mu)}
+button{background:var(--pr);color:var(--cd);border:0;border-radius:8px;padding:8px 14px;font:inherit;cursor:pointer}button.s{background:transparent;color:var(--pr);border:1px solid var(--pr);padding:3px 9px;font-size:13px}
+.tag{font-size:11px;padding:2px 7px;border-radius:9px;background:var(--ln)}.bar{height:8px;background:var(--ln);border-radius:4px;overflow:hidden}.bar i{display:block;height:100%}
+.les{position:fixed;bottom:16px;left:16px;right:16px;max-width:560px;margin:auto;background:#fff7d6;color:#3a3000;border:1px solid var(--y);border-radius:12px;padding:12px;z-index:9}
+h2{margin:6px 0 12px}h3{margin:0 0 8px}.v{text-decoration:line-through;opacity:.5}@media print{header,nav,button,.les{display:none}}
+</style></head><body>
+<header><h1>🎓 Holy Savior Student Store — Financial Management System</h1><input id="q" placeholder="🔍 Search…" oninput="go('search')"><select id="u" onchange="U=USERS[this.value];go(P)"></select></header>
+<nav id="nav"></nav><main id="app"></main><div id="les" class="les" style="display:none" onclick="this.style.display='none'"></div>
+<script>
+const $=s=>document.getElementById(s),r2=n=>Math.round(n*100)/100,TODAY='2026-10-06',KEY='hsss-v1';
+const m=n=>(n<0?'-':'')+'$'+Math.abs(n).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const EXP=['Software / Subscriptions','Rent','Utilities','Insurance','Office Supplies','Marketing','Advertising','Shipping','Equipment','Repairs','Bank Fees','Square Fees','Professional Services','Other'];
+const USERS=[{n:'Maya (Student)',r:'student',p:'Student'},{n:'Eli (School President)',r:'student',p:'School President'},{n:'Jordan (Finance Lead)',r:'finance',p:'Student'},{n:'Mr. Alvarez (Faculty Advisor)',r:'advisor',p:'Faculty Advisor'},{n:'Administrator',r:'admin',p:'Administrator'}];
+const PERM={approve:['advisor','admin'],void:['advisor','admin'],pay:['finance','advisor','admin'],recon:['finance','advisor','admin'],settings:['admin']};
+const can=(u,a)=>PERM[a].includes(u.r);
+const LABEL=[['Cost of Products Sold','COGS'],['Money We Owe','Accounts Payable'],['Transaction History','General Ledger'],['Record a Transaction','Journal Entry']];
+const L=i=>LABEL[i][S.acctView?1:0];
+const LESSON={sale:'Revenue is the money the business earns from selling products.',inv:'Inventory is something the store buys to sell to customers. It becomes a cost when the product is sold.',exp:'An operating expense is a cost required to run the business.',reimb:'A reimbursement pays someone back. It is not a new expense.',pc:'Someone paid with a personal card, so the store now OWES them. Cash did not move yet.'};
+let S,U=USERS[4],P='dash';
+function fresh(){return{seq:1,txns:[],audit:[],recs:[],acctView:false,month:'2026-09',year:'2026–2027',
+ accts:[{id:'bank',n:'School Store Bank Account',b:0},{id:'drawer',n:'Cash Drawer',b:0},{id:'school',n:'School General Account',b:0}],
+ people:['School President','Faculty Advisor','Teacher','Student','Parent'],
+ vendors:[{n:'Apparel Supplier',c:'Dana Ortiz',e:'orders@apparelco.example',ph:'316-555-0142',t:'Net 15'},{n:'Spirit Supply Co.',c:'Lee Park',e:'lee@spiritsupply.example',ph:'316-555-0177',t:'Net 30'},{n:'Square',c:'',e:'',ph:'',t:'Monthly'}],
+ budgets:{Inventory:1000,Marketing:150,Software:120,Supplies:50,Equipment:100,Shipping:50,Other:50},
+ camps:[{n:'Back-to-School Spirit Week',s:'2026-09-08',e:'2026-09-19',b:100}],imports:[]}}
+function log(st,u,a,d){st.audit.unshift({at:TODAY,by:u.n,a,d})}
+function addTxn(st,o,u){const t=Object.assign({date:TODAY,desc:'',type:'Operating Expense',cat:'Other',amt:0,src:'bank',to:'',vendor:'',rcpt:'',due:'',notes:'',appr:'Pending',rs:null,void:false,sqid:'',source:'Manual',qty:0,item:'',cogs:0,fee:0,method:''},o);
+ t.id='T'+String(st.seq++).padStart(4,'0');t.amt=r2(+t.amt);t.by=u.n;t.created=TODAY;t.mod=TODAY;
+ t.person=t.src.startsWith('P:')?t.src.slice(2):u.n;
+ if(t.src.startsWith('P:')&&['Operating Expense','Inventory Purchase'].includes(t.type))t.rs='Submitted';
+ st.txns.push(t);log(st,u,'Created',t.id+' '+t.type+' '+m(t.amt)+' — '+t.desc);return t}
+function approve(st,id,u,rej){const t=st.txns.find(x=>x.id===id);if(!can(u,'approve'))return'Only a Faculty Advisor or Administrator can approve.';
+ if(t.person===u.p)return'Controls: you cannot approve your own request.';t.appr=rej?'Rejected':'Approved';if(t.rs&&t.rs!=='Paid')t.rs=rej?'Rejected':'Approved';t.mod=TODAY;log(st,u,rej?'Rejected':'Approved',t.id);return''}
+function payReimb(st,id,acct,u){const t=st.txns.find(x=>x.id===id);if(!can(u,'pay'))return'Not allowed for your role.';if(t.rs!=='Approved')return'Must be Approved first.';
+ const p=addTxn(st,{type:'Reimbursement',desc:'Reimbursement to '+t.person+' for '+t.id+': '+t.desc,amt:t.amt,src:acct,person:t.person,cat:'Reimbursement',appr:'Approved',ref:t.id},u);p.person=t.person;t.rs='Paid';t.paidDate=TODAY;t.paidRef=p.id;return''}
+function voidTxn(st,id,why,u){const t=st.txns.find(x=>x.id===id);if(!can(u,'void'))return'Only Advisor/Administrator can void.';if(!why)return'A reason is required.';
+ if(t.rs==='Paid')return'Void the reimbursement payment first.';t.void=true;t.voidWhy=why;t.mod=TODAY;log(st,u,'VOIDED',t.id+' — '+why);return''}
+function parseCSV(txt){const rows=txt.trim().split(/\r?\n/).map(l=>l.split(',').map(x=>x.trim()));const h=rows.shift().map(x=>x.toLowerCase());return rows.map(r=>Object.fromEntries(h.map((k,i)=>[k,r[i]])))}
+function importCSV(st,txt,u){let add=0,dup=0;for(const r of parseCSV(txt)){if(!r.id)continue;if(st.txns.some(t=>t.sqid===r.id)){dup++;continue}
+ const refund=+r.amount<0,a=Math.abs(+r.amount);
+ const t=addTxn(st,refund?{type:'Refund',amt:a,src:r.method==='cash'?'drawer':'bank'}:{type:'Sale',amt:a,to:r.method==='cash'?'drawer':'bank',src:'',cat:'Sales',fee:+r.fee||0,cogs:+r.cogs||0,item:r.item,qty:+r.qty||0},u);
+ Object.assign(t,{date:r.date,desc:(r.item||'Square sale')+(t.qty?' ×'+t.qty:''),sqid:r.id,source:'SQUARE',method:r.method,appr:'Approved'});add++}
+ st.imports.push({at:TODAY,by:u.n,add,dup});log(st,u,'Square import',add+' added, '+dup+' duplicates skipped');return{add,dup}}
+function calc(st,from='0000',to='9999'){const R={rev:0,cogs:0,opex:0,oinc:0,inv:0,purch:0,acct:{},in:{},out:{},tr:{},owedP:{},owedV:{},cat:{},units:{}},A=R.acct;
+ st.accts.forEach(a=>A[a.id]=a.b);const mv=(id,x,k)=>{A[id]=(A[id]||0)+x;R[k][id]=(R[k][id]||0)+x},ad=(o,k,x)=>o[k]=(o[k]||0)+x;
+ for(const t of st.txns){if(t.void)continue;const a=t.amt,s=t.src,ir=t.date>=from&&t.date<=to;
+  const pay=()=>{if(A[s]!==undefined)mv(s,-a,'out');else if(s.startsWith('P:'))ad(R.owedP,t.person,a);else if(s==='V')ad(R.owedV,t.vendor,a)};
+  switch(t.type){
+   case'Sale':mv(t.to,a-t.fee,'in');R.inv-=t.cogs;if(ir){R.rev+=a;R.cogs+=t.cogs;R.opex+=t.fee;ad(R.cat,'Square Fees',t.fee);if(t.item){const u=R.units[t.item]=R.units[t.item]||{q:0,rev:0,gp:0};u.q+=t.qty;u.rev+=a;u.gp+=a-t.cogs}}break;
+   case'Refund':mv(s,-a,'out');if(ir)R.rev-=a;break;
+   case'Operating Expense':pay();if(ir){R.opex+=a;ad(R.cat,t.cat,a)}break;
+   case'Inventory Purchase':pay();R.inv+=a;if(ir)R.purch+=a;break;
+   case'Reimbursement':mv(s,-a,'out');ad(R.owedP,t.person,-a);break;
+   case'Vendor Payment':mv(s,-a,'out');ad(R.owedV,t.vendor,-a);break;
+   case'Transfer':case'Bank Deposit':case'Cash Deposit':mv(s,-a,'tr');mv(t.to,a,'tr');break;
+   case'Funding':mv(t.to,a,'in');break;
+   case'Donation':mv(t.to,a,'in');if(ir)R.oinc+=a}}
+ R.gp=R.rev-R.cogs;R.net=R.gp-R.opex+R.oinc;R.cash=Object.values(A).reduce((x,y)=>x+y,0);
+ R.owe=Object.values(R.owedP).reduce((x,y)=>x+y,0)+Object.values(R.owedV).reduce((x,y)=>x+y,0);R.owedPT=Object.values(R.owedP).reduce((x,y)=>x+y,0);return R}
+function seed(){S=fresh();const A=USERS[4],E=USERS[1],F=USERS[3],J=USERS[2];
+ addTxn(S,{date:'2026-09-01',type:'Funding',desc:'Start-up funding from school',amt:1000,src:'',to:'bank',cat:'Funding',appr:'Approved'},A);
+ addTxn(S,{date:'2026-09-02',desc:'Square subscription',amt:39,cat:'Software / Subscriptions',src:'P:School President',vendor:'Square',rcpt:'square-invoice.pdf'},E);
+ const i=addTxn(S,{date:'2026-09-03',type:'Inventory Purchase',desc:'Hoodies & tees (faculty purchase)',amt:250,cat:'Inventory',src:'P:Faculty Advisor',vendor:'Apparel Supplier',rcpt:'receipt-0903.jpg'},F);
+ approve(S,i.id,A);
+ addTxn(S,{date:'2026-09-04',type:'Inventory Purchase',desc:'Scrunchies & tees — paid from store account',amt:400,cat:'Inventory',src:'bank',vendor:'Apparel Supplier',rcpt:'inv-5581.pdf',appr:'Approved'},J);
+ addTxn(S,{date:'2026-09-05',desc:'Spirit week posters',amt:25,cat:'Marketing',src:'bank',vendor:'Spirit Supply Co.',appr:'Approved'},J);
+ addTxn(S,{date:'2026-09-10',type:'Inventory Purchase',desc:'Spirit hoodies (on account, Net 20)',amt:180,cat:'Inventory',src:'V',vendor:'Spirit Supply Co.',due:'2026-09-30',rcpt:'bill-220.pdf',appr:'Approved'},J);
+ const t=addTxn(S,{date:'2026-09-20',desc:'Spirit week stickers',amt:25,cat:'Marketing',src:'P:Teacher',vendor:'Spirit Supply Co.',rcpt:'sticker.jpg'},J);
+ approve(S,t.id,A);payReimb(S,t.id,'bank',A);S.txns.find(x=>x.id===t.id).paidDate='2026-09-28';
+ const px={Hoodie:[35,18],Tee:[15,6],Scrunchie:[5,1.5]};let csv='id,date,item,qty,amount,method,fee,cogs';
+ [['08','Hoodie',2,'card'],['08','Tee',3,'cash'],['09','Scrunchie',4,'cash'],['10','Hoodie',1,'card'],['11','Tee',2,'card'],['15','Scrunchie',6,'card'],['16','Hoodie',3,'cash'],['17','Tee',4,'card'],['18','Scrunchie',5,'cash'],['22','Hoodie',2,'card'],['24','Tee',3,'cash'],['29','Hoodie',1,'card']].forEach((r,n)=>{const a=px[r[1]][0]*r[2];
+  csv+=`\nSQ${1000+n},2026-09-${r[0]},House ${r[1]},${r[2]},${a},${r[3]},${r[3]=='card'?r2(a*.026+.1):0},${px[r[1]][1]*r[2]}`});
+ S.csv=csv;importCSV(S,csv,A);
+ addTxn(S,{date:'2026-09-30',type:'Cash Deposit',desc:'Deposit drawer cash to bank',amt:100,src:'drawer',to:'bank',cat:'Transfer',appr:'Approved'},J);save()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function load(){try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}if(!S)seed()}
+function toast(k){const e=$('les');e.innerHTML='💡 <b>BUSINESS LESSON:</b> '+LESSON[k]+' <small>(tap to close)</small>';e.style.display='block';setTimeout(()=>e.style.display='none',9000)}
+const srcName=k=>{const a=S.accts.find(x=>x.id===k);return a?a.n:k==='V'?'On vendor account (unpaid)':k.startsWith('P:')?k.slice(2)+' Personal Card':'—'};
+const srcOpts=()=>S.accts.map(a=>`<option value="${a.id}">${a.n}</option>`).join('')+S.people.map(p=>`<option value="P:${p}">${p} Personal Card</option>`).join('')+'<option value="V">On vendor account (unpaid bill)</option>';
+const vOpts=()=>'<option value="">—</option>'+S.vendors.map(v=>`<option>${v.n}</option>`).join('');
+const v=id=>$(id).value,tbl=(h,rows)=>`<div class="wrap"><table><tr>${h.map(x=>`<th class="${x[0]=='#'?'n':''}">${x.replace('#','')}</th>`).join('')}</tr>${rows.join('')}</table></div>`;
+const tr=c=>'<tr>'+c.map((x,i)=>`<td class="${String(x).startsWith('$')||String(x).startsWith('-$')?'n':''}">${x}</td>`).join('')+'</tr>';
+const rcp=t=>t.rcpt?'📎 Receipt attached':'⚠️ Receipt missing';
+const needR=t=>!t.void&&['Operating Expense','Inventory Purchase'].includes(t.type)&&!t.rcpt;
+function fileName(id){const f=$(id).files[0];return f?f.name:''}
+function act(r){if(r)alert(r);save();go(P)}
+/* PAGES */
+function dash(){const k=calc(S),mo=calc(S,S.month+'-01',S.month+'-31');const card=(a,b,c='')=>`<div class="card"><div class="k">${a}</div><div class="big ${c}">${b}</div></div>`;
+ const al=[];const od=S.txns.filter(t=>!t.void&&t.src==='V'&&t.due&&t.due<TODAY&&(k.owedV[t.vendor]||0)>0);od.forEach(t=>al.push('🔴 Vendor bill overdue: '+t.vendor+' '+m(t.amt)+' (due '+t.due+')'));
+ S.txns.filter(t=>t.rs==='Approved'&&t.date<'2026-09-22').forEach(t=>al.push('🔴 Reimbursement overdue: '+t.person+' '+m(t.amt)));
+ const pa=S.txns.filter(t=>['Submitted','Pending Approval'].includes(t.rs)).length;if(pa)al.push('🟡 '+pa+' reimbursement(s) waiting for approval');
+ const mr=S.txns.filter(needR).length;if(mr)al.push('🟡 '+mr+' expense(s) missing receipts');
+ budRows(k).filter(b=>b.pct>=80).forEach(b=>al.push('🟡 Budget nearly used: '+b.n+' ('+Math.round(b.pct)+'%)'));
+ const lr=S.recs[0];if(lr&&lr.diff)al.push('🟡 Last reconciliation was off by '+m(lr.diff));
+ const pd=S.txns.filter(t=>t.rs==='Paid').slice(-1)[0];if(pd)al.push('🟢 Reimbursement paid: '+pd.person+' '+m(pd.amt));
+ const best=Object.entries(k.units).sort((a,b)=>b[1].q-a[1].q).slice(0,3);
+ return `<h2>Financial Dashboard <small style="color:var(--mu)">${S.year} School Year</small></h2><div class="grid">${card('Sales',m(k.rev))}${card('Gross Profit',m(k.gp))}${card('Net Profit',m(k.net),k.net>=0?'g':'rd')}${card('Cash & Bank',m(k.cash))}${card('Inventory',m(k.inv))}${card(L(1),m(k.owe),k.owe?'y':'g')}</div>
+ <div class="card" style="margin-top:12px"><h3>💵 Profit vs. Cash</h3>Profit: <b>${m(k.net)}</b> &nbsp; Cash: <b>${m(k.cash)}</b><br><small>Profit and cash are not always the same. The store may have money tied up in inventory (${m(k.inv)}) or may owe money to vendors (${m(Object.values(k.owedV).reduce((a,b)=>a+b,0))}) or people (${m(k.owedPT)}).</small></div>
+ <div class="card"><h3>This month <input type="month" value="${S.month}" style="width:auto" onchange="S.month=this.value;go('dash')"></h3>${tbl(['Item','#Amount'],[tr(['Sales',m(mo.rev)]),tr([L(0),m(mo.cogs)]),tr(['Gross Profit',m(mo.gp)]),tr(['Expenses',m(mo.opex)]),tr(['<b>Net Profit</b>',m(mo.net)])])}</div>
+ <div class="card"><h3>⚠️ Attention</h3>${al.map(a=>'<div>'+a+'</div>').join('')||'All clear 🟢'}</div>
+ <div class="grid"><div class="card"><h3>Best sellers</h3>${best.map((b,i)=>`<div>${i+1}. ${b[0]} (${b[1].q} sold)</div>`).join('')}</div>
+ <div class="card"><h3>Recent activity</h3>${S.txns.filter(t=>!t.void&&!t.sqid).slice(-4).reverse().map(t=>`<div>${t.desc.slice(0,28)} <b>${m(t.amt)}</b> <small>${srcName(t.src||t.to).replace('School Store ','')}</small></div>`).join('')}</div></div>`}
+function txRow(t){return `<tr class="${t.void?'v':''}"><td>${t.id}</td><td>${t.date}</td><td>${t.desc}${t.source=='SQUARE'?' <span class="tag">SOURCE: SQUARE</span>':''}</td><td>${t.type}</td><td>${t.cat}</td><td class="n">${m(t.amt)}</td><td>${srcName(t.src||t.to)}</td><td>${t.person}</td><td>${['Operating Expense','Inventory Purchase'].includes(t.type)?rcp(t):''}</td><td>${t.void?'VOID':t.appr}</td><td>${t.void||!can(U,'void')?'':`<button class="s" onclick="vd('${t.id}')">Void</button>`}</td></tr>`}
+function vd(id){const w=prompt('Reason for voiding (kept in audit log):');if(w!==null)act(voidTxn(S,id,w,U))}
+function txs(list){return tbl(['ID','Date','Description','Type','Category','#Amount','Paid From','Person','Receipt','Status',''],list.map(txRow))}
+function trans(){return `<h2>${L(2)}</h2><div class="card"><h3>📥 Import Square sales (CSV)</h3><small>Columns: id,date,item,qty,amount,method,fee,cogs. Negative amount = refund. Duplicate Square IDs are skipped.</small><textarea id="csv" rows="3" placeholder="paste CSV here"></textarea><br><input type="file" accept=".csv" onchange="this.files[0].text().then(x=>$('csv').value=x)"><button onclick="imp()">Import</button> <button class="s" onclick="$('csv').value=S.csv">Load sample</button></div>
+ <div class="card"><h3>${L(3)}</h3><div class="f"><div><label>Type</label><select id="tt"><option>Vendor Payment</option><option>Transfer</option><option>Bank Deposit</option><option>Donation</option><option>Funding</option><option>Refund</option></select></div><div><label>Date</label><input id="td" type="date" value="${TODAY}"></div><div><label>Description</label><input id="tde"></div><div><label>Amount</label><input id="ta" type="number" step=".01"></div><div><label>From (payer / source)</label><select id="ts">${srcOpts()}</select></div><div><label>To (account or vendor)</label><select id="tto">${S.accts.map(a=>`<option value="${a.id}">${a.n}</option>`).join('')}</select></div><div><label>Vendor (for payments)</label><select id="tv">${vOpts()}</select></div></div><br><button onclick="rec()">Save</button></div>
+ <div class="card">${txs([...S.txns].reverse())}</div>`}
+function imp(){const r=importCSV(S,v('csv'),U);alert(r.add+' sales imported, '+r.dup+' duplicates skipped.');toast('sale');act()}
+function rec(){const ty=v('tt');addTxn(S,{type:ty,date:v('td'),desc:v('tde')||ty,amt:v('ta'),src:ty=='Donation'||ty=='Funding'?'':v('ts'),to:v('tto'),vendor:v('tv'),cat:ty},U);act()}
+function groupBy(f){const g={};S.txns.filter(t=>!t.void&&t.type==='Operating Expense').forEach(t=>g[f(t)]=(g[f(t)]||0)+t.amt);return tbl(['Group','#Total'],Object.entries(g).map(([a,b])=>tr([a,m(b)])))}
+function exps(){const ex=S.txns.filter(t=>!t.void&&['Operating Expense','Inventory Purchase'].includes(t.type));
+ return `<h2>Expenses</h2><div class="card"><h3>Add expense or inventory purchase</h3><div class="f"><div><label>Kind</label><select id="ek"><option>Operating Expense</option><option>Inventory Purchase</option></select></div><div><label>Date</label><input id="ed" type="date" value="${TODAY}"></div><div><label>Category</label><select id="ec">${EXP.map(c=>`<option>${c}</option>`).join('')}</select></div><div><label>Description</label><input id="ede"></div><div><label>Amount</label><input id="ea" type="number" step=".01"></div><div><label>Paid from</label><select id="es">${srcOpts()}</select></div><div><label>Vendor</label><select id="ev">${vOpts()}</select></div><div><label>Due date (unpaid bills)</label><input id="edu" type="date"></div><div><label>Receipt</label><input id="er" type="file"></div><div><label>Notes</label><input id="en"></div></div><br><button onclick="addE()">Save</button> <small>Paid by a personal card? A reimbursement is created automatically.</small></div>
+ <div class="grid"><div class="card"><h3>By category</h3>${groupBy(t=>t.cat)}</div><div class="card"><h3>By person</h3>${groupBy(t=>t.person)}</div><div class="card"><h3>By payment source</h3>${groupBy(t=>srcName(t.src))}</div><div class="card"><h3>By vendor</h3>${groupBy(t=>t.vendor||'—')}</div><div class="card"><h3>By month</h3>${groupBy(t=>t.date.slice(0,7))}</div></div>
+ <div class="card"><h3>All expenses & purchases</h3>${txs(ex)}</div>`}
+function addE(){const k=v('ek'),t=addTxn(S,{type:k,date:v('ed'),cat:k=='Inventory Purchase'?'Inventory':v('ec'),desc:v('ede'),amt:v('ea'),src:v('es'),vendor:v('ev'),due:v('edu'),rcpt:fileName('er'),notes:v('en')},U);
+ if(t.src==='V')t.appr='Approved';toast(t.src.startsWith('P:')?'pc':k=='Inventory Purchase'?'inv':'exp');act()}
+function reimb(){const k=calc(S),rs=S.txns.filter(t=>t.rs&&!t.void);
+ return `<h2>Reimbursement Center</h2><div class="card"><div class="k">Total outstanding reimbursements</div><div class="big ${k.owedPT?'y':'g'}">${m(k.owedPT)}</div></div>
+ <div class="card"><h3>New Reimbursement</h3><div class="f"><div><label>Person who paid</label><select id="rp">${S.people.map(p=>`<option>${p}</option>`).join('')}</select></div><div><label>Date</label><input id="rd" type="date" value="${TODAY}"></div><div><label>What was purchased?</label><input id="rw"></div><div><label>Amount</label><input id="ra" type="number" step=".01"></div><div><label>Category</label><select id="rc"><option>Inventory</option>${EXP.map(c=>`<option>${c}</option>`).join('')}</select></div><div><label>Vendor</label><select id="rv">${vOpts()}</select></div><div><label>Receipt</label><input id="rr" type="file"></div></div><br><button onclick="newR()">Submit request</button></div>
+ <div class="card">${tbl(['Person','#Amount','Reason','Status','Submitted','Paid','Receipt',''],rs.map(t=>tr([t.person,m(t.amt),t.desc,`<span class="${t.rs=='Paid'?'g':t.rs=='Rejected'?'rd':'y'}">● ${t.rs}</span>`,t.date,t.paidDate||'—',rcp(t),(['Submitted','Pending Approval'].includes(t.rs)?`<button class="s" onclick="act(approve(S,'${t.id}',U))">Approve</button> <button class="s" onclick="act(approve(S,'${t.id}',U,1))">Reject</button>`:t.rs=='Approved'?`<button class="s" onclick="act(payReimb(S,'${t.id}','bank',U))">Pay from bank</button>`:'')])))}</div>`}
+function newR(){const c=v('rc'),t=addTxn(S,{type:c=='Inventory'?'Inventory Purchase':'Operating Expense',date:v('rd'),cat:c,desc:v('rw'),amt:v('ra'),src:'P:'+v('rp'),vendor:v('rv'),rcpt:fileName('rr')},U);toast('pc');act()}
+function vend(){const k=calc(S);return `<h2>Vendors</h2><div class="card"><div class="f"><input id="vn" placeholder="Vendor name"><input id="vc" placeholder="Contact"><input id="ve" placeholder="Email"><input id="vp" placeholder="Phone"><input id="vt" placeholder="Terms (Net 30)"></div><br><button onclick="S.vendors.push({n:v('vn'),c:v('vc'),e:v('ve'),ph:v('vp'),t:v('vt')});act()">Add vendor</button></div>
+ <div class="card">${tbl(['Vendor','Contact','Terms','#Billed','#Paid','#'+L(1).replace('Money We Owe','Owed'),''],S.vendors.map(x=>{const b=S.txns.filter(t=>!t.void&&t.src==='V'&&t.vendor===x.n).reduce((a,t)=>a+t.amt,0),o=k.owedV[x.n]||0;return tr([x.n,x.c+' '+x.e,x.t,m(b),m(b-o),`<b class="${o?'rd':'g'}">${m(o)}</b>`,o>0?`<button class="s" onclick="pv('${x.n}',${o})">Pay</button>`:''])}))}</div><small>Purchase Orders: not in v1 — record a vendor bill as an Inventory Purchase paid “On vendor account”.</small>`}
+function pv(n,o){const a=prompt('Amount to pay '+n,o);if(a)act(can(U,'pay')?(addTxn(S,{type:'Vendor Payment',desc:'Payment to '+n,amt:a,src:'bank',vendor:n,cat:'Vendor Payment',appr:'Approved'},U),''):'Not allowed for your role.')}
+function money(){const k=calc(S);return `<h2>Money / Accounts</h2><div class="card">${tbl(['Account','#Beginning','#Money in','#Money out','#Transfers','#Ending'],S.accts.map(a=>tr([a.n,m(a.b),m(k.in[a.id]||0),m(k.out[a.id]||0),m(k.tr[a.id]||0),'<b>'+m(k.acct[a.id])+'</b>'])))}</div>
+ <div class="card"><h3>Reconcile (two-person check)</h3><div class="f"><div><label>Account</label><select id="xa">${S.accts.map(a=>`<option value="${a.id}">${a.n}</option>`).join('')}</select></div><div><label>Actual balance / cash counted</label><input id="xb" type="number" step=".01"></div><div><label>Reason for difference</label><select id="xr"><option>None</option><option>Bank fee</option><option>Square fee</option><option>Pending transaction</option><option>Cash transaction</option><option>Refund</option><option>Error</option><option>Other</option></select></div><div><label>Counted by</label><input id="xc"></div><div><label>Verified by (second person)</label><input id="xv"></div></div><br><button onclick="recon()">Save reconciliation</button></div>
+ <div class="card">${tbl(['Date','Account','#System','#Actual','#Difference','Reason','Counted / Verified'],S.recs.map(r=>tr([r.at,r.a,m(r.sys),m(r.act),`<b class="${r.diff?'rd':'g'}">${m(r.diff)}</b>`,r.reason,r.c+' / '+r.vv])))}</div>`}
+function recon(){if(!can(U,'recon'))return alert('Finance Lead, Advisor or Admin only.');const r=doRecon(S,v('xa'),+v('xb'),v('xr'),v('xc'),v('xv'),U);if(typeof r=='string')return alert(r);act()}
+function doRecon(st,id,actual,reason,c,vv,u){if(!c||!vv||c.trim().toLowerCase()===vv.trim().toLowerCase())return'Two different people must count and verify.';
+ const sys=calc(st).acct[id],diff=r2(actual-sys);if(diff&&reason==='None')return'Please choose a reason for the difference.';st.recs.unshift({at:TODAY,a:st.accts.find(x=>x.id===id).n,sys,act:actual,diff,reason,c,vv});log(st,u,'Reconciled',id+' diff '+diff);return st.recs[0]}
+function budRows(k){const c=k.cat,g=x=>c[x]||0,act={Inventory:k.purch,Marketing:g('Marketing')+g('Advertising'),Software:g('Software / Subscriptions'),Supplies:g('Office Supplies'),Equipment:g('Equipment'),Shipping:g('Shipping')};act.Other=Object.entries(c).filter(([a])=>!['Marketing','Advertising','Software / Subscriptions','Office Supplies','Equipment','Shipping'].includes(a)).reduce((a,b)=>a+b[1],0);
+ return Object.keys(S.budgets).map(n=>({n,b:S.budgets[n],a:act[n]||0,pct:S.budgets[n]?(act[n]||0)/S.budgets[n]*100:0}))}
+function bud(){return `<h2>Budgets</h2><div class="card">${tbl(['Category','#Budget','#Actual','#Remaining','Used'],budRows(calc(S)).map(b=>tr([b.n,`<input type="number" value="${b.b}" style="width:90px" onchange="S.budgets['${b.n}']=+this.value;save();go('bud')">`,m(b.a),m(b.b-b.a),`<div class="bar"><i style="width:${Math.min(100,b.pct)}%;background:var(--${b.pct>=100?'r':b.pct>=80?'y':'g'})"></i></div>${Math.round(b.pct)}%`])))}</div>`}
+function mkt(){return `<h2>Marketing</h2>${S.camps.map(c=>{const k=calc(S,c.s,c.e),cost=(k.cat.Marketing||0)+(k.cat.Advertising||0);return `<div class="card"><h3>${c.n}</h3><div class="grid"><div><div class="k">Budget</div><b>${m(c.b)}</b></div><div><div class="k">Marketing cost</div><b>${m(cost)}</b></div><div><div class="k">Sales</div><b>${m(k.rev)}</b></div><div><div class="k">Gross profit</div><b>${m(k.gp)}</b></div><div><div class="k">Net impact</div><b class="${k.gp-cost>=0?'g':'rd'}">${m(k.gp-cost)}</b></div></div><small>${c.s} → ${c.e}. Marketing cost = Marketing/Advertising expenses in these dates.</small></div>`}).join('')}
+ <div class="card"><div class="f"><input id="mn" placeholder="Campaign name"><input id="ms" type="date"><input id="me" type="date"><input id="mb" type="number" placeholder="Budget"></div><br><button onclick="S.camps.push({n:v('mn'),s:v('ms'),e:v('me'),b:+v('mb')});act()">Add campaign</button></div>`}
+function is(k){return[['Revenue (Sales)',k.rev],[L(0)+' (−)',k.cogs],['<b>Gross Profit</b>',k.gp],['Operating Expenses (−)',k.opex],['Donations',k.oinc],['<b>Net Profit</b>',k.net],['Gross margin',k.rev?(k.gp/k.rev*100).toFixed(1)+'%':'—'],['Net margin',k.rev?(k.net/k.rev*100).toFixed(1)+'%':'—']]}
+function reports(){const mo=S.month,pm=new Date(mo+'-01');pm.setMonth(pm.getMonth()-1);const pmS=pm.toISOString().slice(0,7),cf=S.cf||'2026-09-01',ct=S.ct||TODAY;
+ const cols=[['This month',calc(S,mo+'-01',mo+'-31')],['Previous',calc(S,pmS+'-01',pmS+'-31')],['School year',calc(S,'2026-09-01','2027-08-31')],['Custom',calc(S,cf,ct)]],all=calc(S),f=x=>typeof x=='number'?m(x):x;
+ const tot=Object.values(all.cat).reduce((a,b)=>a+b,0),sl=Object.entries(all.units).sort((a,b)=>a[1].q-b[1].q);
+ return `<h2>Reports</h2><button onclick="window.print()">🖨 Print / Save as PDF</button> <button onclick="csv()">⬇ Export CSV (opens in Excel)</button>
+ <div class="card"><h3>Income Statement & Profitability <small>custom: <input type="date" value="${cf}" style="width:auto" onchange="S.cf=this.value;go('reports')"> <input type="date" value="${ct}" style="width:auto" onchange="S.ct=this.value;go('reports')"></small></h3>${tbl(['Line',...cols.map(c=>'#'+c[0])],is(cols[0][1]).map((r,i)=>tr([r[0],...cols.map(c=>f(is(c[1])[i][1]))])))}</div>
+ <div class="card"><h3>Expense report</h3>${tbl(['Category','#Amount','#% of expenses'],Object.entries(all.cat).map(([c,a])=>tr([c,m(a),(a/tot*100).toFixed(1)+'%'])))}</div>
+ <div class="card"><h3>Reimbursements</h3>${tbl(['Person','#Amount','Reason','Status','Submitted','Paid'],S.txns.filter(t=>t.rs&&!t.void).map(t=>tr([t.person,m(t.amt),t.desc,t.rs,t.date,t.paidDate||'—'])))}</div>
+ <div class="card"><h3>${L(1)} — vendors</h3>${tbl(['Vendor','#Balance due','Due date'],Object.entries(all.owedV).filter(x=>x[1]>0).map(([n,b])=>tr([n,m(b),S.txns.filter(t=>t.src==='V'&&t.vendor===n).map(t=>t.due).sort()[0]||'—'])))}</div>
+ <div class="card"><h3>Cash / bank</h3>${tbl(['Account','#Ending'],S.accts.map(a=>tr([a.n,m(all.acct[a.id])])))}</div>
+ <div class="card"><h3>Products</h3>${tbl(['Product','#Units','#Sales','#Gross profit'],sl.slice().reverse().map(([n,u])=>tr([n,u.q,m(u.rev),m(u.gp)])))}<small>Slowest seller: ${sl[0]?sl[0][0]:'—'}. Inventory value: ${m(all.inv)} · Outstanding reimbursements: ${m(all.owedPT)}</small></div>
+ <div class="card"><h3>⚠️ Expenses missing receipts</h3>${tbl(['ID','Date','Description','#Amount','Person'],S.txns.filter(needR).map(t=>tr([t.id,t.date,t.desc,m(t.amt),t.person])))}</div>`}
+function csv(){const rows=[['ID','Date','Description','Type','Category','Amount','Paid From','Person','Vendor','Receipt','Status','Source']].concat(S.txns.map(t=>[t.id,t.date,t.desc,t.type,t.cat,t.amt,srcName(t.src||t.to),t.person,t.vendor,t.rcpt,t.void?'VOID':t.appr,t.source]));
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([rows.map(r=>r.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(',')).join('\n')],{type:'text/csv'}));a.download='holy-savior-store-transactions.csv';a.click()}
+function search(){const q=v('q').toLowerCase();if(!q)return'<h2>Search</h2>Type in the search box above.';return `<h2>Search: “${q}”</h2><div class="card">${txs(S.txns.filter(t=>JSON.stringify(t).toLowerCase().includes(q)))}</div><div class="card">${S.vendors.filter(x=>JSON.stringify(x).toLowerCase().includes(q)).map(x=>`<div>${x.n} — ${x.c} ${x.e}</div>`).join('')||'No vendors found'}</div>`}
+function learn(){const G=[['Revenue','Money from selling hoodies, tees, and scrunchies.'],['Expenses','Costs to run the store, like the Square subscription.'],['Profit','What is left after costs.'],['Gross Profit','Sales minus what the products cost us.'],['Net Profit','Gross profit minus expenses.'],['Cost of Products Sold (COGS)','What we paid for the items we actually sold. Sell a $35 hoodie that cost $18 → COGS $18.'],['Inventory','Products on the shelf waiting to sell. It is an asset, not an expense.'],['Reimbursements','Paying back a person who used their own money. Not a new expense!'],['Vendors','Businesses we buy from.'],['Budget','A plan for how much to spend.'],['Cash flow','Cash coming in and going out. Profit ≠ cash: inventory and unpaid bills tie money up.'],['Reconciliation','Checking our records match the real bank balance or cash count.'],['Assets','Things the store owns: cash, bank money, inventory.'],['Liabilities','Things the store owes: vendor bills and reimbursements.']];
+ return `<h2>Student Learning</h2>${G.map(g=>`<div class="card"><h3>💡 ${g[0]}</h3>${g[1]}</div>`).join('')}`}
+function settings(){const adm=can(U,'settings');return `<h2>Settings</h2><div class="card"><label><input type="checkbox" style="width:auto" ${S.acctView?'checked':''} ${adm?'':'disabled'} onchange="S.acctView=this.checked;save();go('set')"> Accounting View (professional terms) — admin only</label></div>
+ ${adm?`<div class="card"><h3>Add payment source / account</h3><input id="sp" placeholder="e.g. Coach Personal Card (person name)" style="max-width:320px"> <button onclick="S.people.push(v('sp'));act()">Add person card</button> <button onclick="S.accts.push({id:'a'+Date.now(),n:v('sp'),b:0});act()">Add account</button> <button class="s" onclick="if(confirm('Reset to sample data?')){seed();go('dash')}">Reset sample data</button></div>`:''}
+ <div class="card"><h3>✅ Self-tests</h3><button onclick="$('tr').innerHTML=tests()">Run tests</button><div id="tr"></div></div>
+ <div class="card"><h3>Audit log</h3>${tbl(['Date','Who','Action','Detail'],S.audit.map(a=>tr([a.at,a.by,a.a,a.d])))}</div>`}
+/* TESTS */
+function tests(){const out=[],ok=(n,c)=>out.push((c?'✅ ':'❌ ')+n);const A=USERS[4],E=USERS[1],F=USERS[3],T=fresh();
+ addTxn(T,{type:'Funding',amt:1000,src:'',to:'bank',date:'2026-09-01'},A);
+ const s=addTxn(T,{desc:'Square sub',amt:39,cat:'Software / Subscriptions',src:'P:School President',date:'2026-09-02'},E);
+ const i=addTxn(T,{type:'Inventory Purchase',amt:250,cat:'Inventory',src:'P:Faculty Advisor',date:'2026-09-03'},F);
+ addTxn(T,{type:'Inventory Purchase',amt:100,src:'bank',date:'2026-09-04'},A);
+ let k=calc(T);ok('Square sub is a $39 expense',k.opex===39);ok('Inventory purchases are NOT operating expenses (opex still 39)',k.opex===39&&k.purch===350);ok('Inventory = $350',k.inv===350);
+ ok('President owed $39, Faculty owed $250',k.owedP['School President']===39&&k.owedP['Faculty Advisor']===250);ok('Cash only reduced by bank buy ($900)',k.cash===900);ok('Profit = −$39 (not −$389)',k.net===-39);
+ ok('Student cannot approve',approve(T,s.id,USERS[0])!=='');ok('President cannot approve own',approve(T,s.id,E)!=='');ok('Advisor cannot approve own',approve(T,i.id,F)!=='');ok('Advisor approves President',approve(T,s.id,F)==='');ok('Admin approves Advisor',approve(T,i.id,A)==='');
+ ok('Pay blocked before approval',payReimb(T,s.id,'bank',USERS[0])!=='');ok('Reimb paid',payReimb(T,s.id,'bank',A)===''&&payReimb(T,i.id,'bank',A)==='');
+ k=calc(T);ok('After reimbursements: owed $0',k.owedPT===0);ok('Expenses NOT double counted (opex 39)',k.opex===39);ok('Cash = 900−289 = $611',k.cash===611);ok('Inventory unchanged by reimbursement ($350)',k.inv===350);
+ const csv='id,date,item,qty,amount,method,fee,cogs\nX1,2026-09-08,Hoodie,1,35,card,1.01,18';let r1=importCSV(T,csv,A),r2_=importCSV(T,csv,A);ok('Square import adds once, duplicate skipped',r1.add===1&&r2_.dup===1);
+ k=calc(T);ok('Revenue 35, COGS 18, GP 17; fee is an expense',k.rev===35&&k.cogs===18&&k.gp===17&&r2(k.opex)===40.01);ok('Inventory reduced by COGS only (332)',k.inv===332);
+ addTxn(T,{type:'Refund',amt:5,src:'bank'},A);ok('Refund reduces revenue',calc(T).rev===30);
+ const c0=calc(T);addTxn(T,{type:'Transfer',amt:50,src:'bank',to:'drawer'},A);const c1=calc(T);ok('Transfer: no revenue/expense change, cash same',c1.rev===c0.rev&&c1.opex===c0.opex&&c1.cash===c0.cash);
+ const n=T.txns.length;ok('Student cannot void',voidTxn(T,'T0001','x',USERS[0])!=='');ok('Void needs reason',voidTxn(T,'T0004','',A)!=='');ok('Void works, record kept + audited',voidTxn(T,'T0004','duplicate',A)===''&&T.txns.length===n&&T.audit[0].a==='VOIDED');
+ const sys=calc(T).acct.bank;ok('Reconcile: difference found',doRecon(T,'bank',sys-15,'Bank fee','Maya','Jordan',A).diff===-15);ok('Reconcile needs two different people',typeof doRecon(T,'bank',sys,'None','Maya','maya',A)==='string');
+ return out.map(x=>'<div>'+x+'</div>').join('')+`<b>${out.filter(x=>x[0]=='✅').length}/${out.length} passed</b>`}
+const PAGES={dash:['Dashboard',dash],trans:['Transactions',trans],exps:['Expenses',exps],reimb:['Reimbursements',reimb],vend:['Vendors',vend],money:['Money / Accounts',money],bud:['Budgets',bud],mkt:['Marketing',mkt],reports:['Reports',reports],set:['Settings',settings],learn:['Student Learning',learn],search:['',search]};
+function go(p){P=p;$('nav').innerHTML=Object.entries(PAGES).filter(x=>x[1][0]).map(([k,x])=>`<a class="${k==P?'on':''}" onclick="go('${k}')">${x[0]}</a>`).join('');$('app').innerHTML=PAGES[p][1]();scrollTo(0,0)}
+$('u').innerHTML=USERS.map((x,i)=>`<option value="${i}" ${i==4?'selected':''}>${x.n}</option>`).join('');load();go('dash');
+</script></body></html>
